@@ -24,43 +24,30 @@ const columns = [
 ];
 
 function GanttChart() {
-  const [rows, setRows] = useState([
-    [
-      "Process1",
-      "CPU Task 1",
-      new Date(2023, 0, 1, 0, 0, 0, 0),
-      new Date(2023, 0, 1, 0, 0, 0, 100),
-      100,
-      100,
-      null,
-    ],
-    [
-      "Process2",
-      "CPU Task 2",
-      new Date(2023, 0, 1, 0, 0, 0, 100),
-      new Date(2023, 0, 1, 0, 0, 0, 300),
-      200,
-      100,
-      "Process1",
-    ],
-  ]);
+  const [rows, setRows] = useState([]);
 
-  // State for new process inputs
   const [processID, setProcessID] = useState("");
-  const [arrivalTime, setArrivalTime] = useState("");
   const [burstTime, setBurstTime] = useState("");
 
-  // Function to add new process to rows
   const addProcess = () => {
-    const startDate = new Date(2023, 0, 1, 0, 0, 0, parseInt(arrivalTime));
-    const endDate = new Date(startDate.getTime() + parseInt(burstTime));
+    const burst = parseInt(burstTime);
+    let startDate;
+
+    if (rows.length === 0) {
+      startDate = new Date(2023, 0, 1, 0, 0, 0, 0);
+    } else {
+      const lastProcessEndTime = rows[rows.length - 1][3].getTime();
+      startDate = new Date(lastProcessEndTime);
+    }
+
+    const endDate = new Date(startDate.getTime() + burst);
 
     const newProcess = [
       processID,
-      `CPU Task ${rows.length + 1}`,
+      `CPU Task ${processID}`,
       startDate,
       endDate,
-      parseInt(burstTime),
+      burst,
       100,
       null,
     ];
@@ -69,7 +56,6 @@ function GanttChart() {
 
     // Clear input fields
     setProcessID("");
-    setArrivalTime("");
     setBurstTime("");
   };
 
@@ -96,9 +82,7 @@ function GanttChart() {
               <Input id="processID" value={processID} onChange={(e) => setProcessID(e.target.value)} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="arrivalTime" className="text-right">Arrival Time</Label>
-              <Input id="arrivalTime" value={arrivalTime} onChange={(e) => setArrivalTime(e.target.value)} className="col-span-3" />
-              <Label htmlFor="burstTime" className="text-right">Burst Time</Label>
+              <Label htmlFor="burstTime" className="text-right">Burst Time in (ms) </Label>
               <Input id="burstTime" value={burstTime} onChange={(e) => setBurstTime(e.target.value)} className="col-span-3" />
             </div>
           </div>
