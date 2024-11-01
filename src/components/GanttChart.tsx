@@ -24,8 +24,18 @@ const columns = [
 ];
 
 function GanttChart() {
-  const [rows, setRows] = useState([]);
+  // Define the structure of each row in the Gantt chart data
+  type Process = [
+    string, // Task ID
+    string, // Task Name
+    Date,   // Start Date
+    Date,   // End Date
+    number, // Duration
+    number, // Percent Complete
+    string | null // Dependencies
+  ];
 
+  const [rows, setRows] = useState<Process[]>([]); // Specify the type of rows
   const [processID, setProcessID] = useState("");
   const [burstTime, setBurstTime] = useState("");
 
@@ -34,15 +44,18 @@ function GanttChart() {
     let startDate;
 
     if (rows.length === 0) {
+      // Initialize the first start date
       startDate = new Date(2023, 0, 1, 0, 0, 0, 0);
     } else {
-      const lastProcessEndTime = rows[rows.length - 1][3].getTime();
-      startDate = new Date(lastProcessEndTime);
+      // Get the end date of the last process
+      const lastEndDate = rows[rows.length - 1][3]; // Access the end date directly
+      startDate = new Date(lastEndDate.getTime()); // Use it as the new start date
     }
 
     const endDate = new Date(startDate.getTime() + burst);
 
-    const newProcess = [
+    // Create a new process row that matches the Gantt chart data format
+    const newProcess: Process = [
       processID,
       `CPU Task ${processID}`,
       startDate,
@@ -82,7 +95,7 @@ function GanttChart() {
               <Input id="processID" value={processID} onChange={(e) => setProcessID(e.target.value)} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="burstTime" className="text-right">Burst Time in (ms) </Label>
+              <Label htmlFor="burstTime" className="text-right">Burst Time in (ms)</Label>
               <Input id="burstTime" value={burstTime} onChange={(e) => setBurstTime(e.target.value)} className="col-span-3" />
             </div>
           </div>
